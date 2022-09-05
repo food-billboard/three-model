@@ -38,7 +38,7 @@ const Home = () => {
     > 
       {
         !parentData.value && (
-          <GridLoader color={parentData.color || '#4ea397'} />
+          <GridLoader className='three-model-home-loading' color={parentData.color || '#4ea397'} />
         )
       }
       {

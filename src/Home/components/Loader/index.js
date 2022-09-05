@@ -1,20 +1,25 @@
 import * as THREE from "three"
-import { useEffect, useLayoutEffect, Suspense } from "react"
-import { Canvas, applyProps } from "@react-three/fiber"
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { useEffect, useLayoutEffect, Suspense, useMemo, useCallback } from "react"
+import { Canvas, applyProps, useLoader } from "@react-three/fiber"
 import {
 	AccumulativeShadows,
 	RandomizedLight,
 	OrbitControls,
 	Environment,
 	useGLTF,
+	useFBX
 } from "@react-three/drei"
 import { FlakesTexture } from "three-stdlib"
+import './index.css'
 
 const Loader = (props) => {
 	const { value } = props
 
 	return (
-		<div>
+		<div
+			className="three-model-home-loader"
+		>
 			<InternalLoader value={value} />
 		</div>
 	)
@@ -24,48 +29,101 @@ function InternalLoader(props) {
 	const { value } = props
 	const { value: modelUrl } = value
 
+	const objectType = useMemo(() => {
+		try {
+			return modelUrl.split('.').at(-1)
+		}catch(err) {
+			return null 
+		}
+	}, [modelUrl])
+
+	const onClick = useCallback(() => {
+
+	}, [])
+
+	const model = useMemo(() => {
+		if(!objectType) return null 
+		const commonProps = {
+			rotation: [0, 1, 0],
+			scale: 0.01,
+			position: [0, 0, 0],
+			url: modelUrl,
+			onClick
+		}
+		switch(objectType) {
+			case 'fbx':
+				return (
+					<FbxModel
+						{...commonProps}
+					/>
+				)
+			case 'obj':
+				return (
+					<ObjModel
+						{...commonProps}
+					/>
+				)
+			case 'glb':
+			case 'gltf':
+				return (
+					<GltfModel
+						{...commonProps}
+					/>
+				)
+		}
+	}, [objectType, modelUrl, onClick])
+
 	return (
 		<Canvas shadows camera={{ position: [8, 1.5, 8], fov: 25 }}>
 			<Suspense fallback={null}>
-				<Model
-					rotation={[-0.63, 0, 0]}
-					scale={2}
-					position={[0, -1.175, 0]}
-					url={modelUrl}
-				/>
+				{model}
 			</Suspense>
-			{/* <AccumulativeShadows temporal frames={100} color="orange" colorBlend={2} toneMapped={true} alphaTest={0.9} opacity={2} scale={12} position={[0, -0.5, 0]}>
-        <RandomizedLight amount={8} radius={4} ambient={0.5} intensity={1} position={[5, 5, -10]} bias={0.001} />
-      </AccumulativeShadows> */}
 			<OrbitControls autoRotate={false} />
 			<Environment preset="city" />
 		</Canvas>
 	)
 }
 
-function Model(props) {
+function GltfModel(props) {
 	const { url, ...nextProps } = props
 	const { scene, materials } = useGLTF(url)
-	useLayoutEffect(() => {
-		scene.traverse(
-			(obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true)
-		)
-    console.log(materials.default) 
-    return 
-		applyProps(materials.default, {
-			color: "orange",
-			roughness: 0,
-			normalMap: new THREE.CanvasTexture(
-				new FlakesTexture(),
-				THREE.UVMapping,
-				THREE.RepeatWrapping,
-				THREE.RepeatWrapping
-			),
-			"normalMap-repeat": [40, 40],
-			normalScale: [0.05, 0.05],
-		})
-	})
+	// useLayoutEffect(() => {
+	// 	scene.traverse(
+	// 		(obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true)
+	// 	)
+	// 	applyProps(materials.default, {
+	// 		color: "orange",
+	// 		roughness: 0,
+	// 		normalMap: new THREE.CanvasTexture(
+	// 			new FlakesTexture(),
+	// 			THREE.UVMapping,
+	// 			THREE.RepeatWrapping,
+	// 			THREE.RepeatWrapping
+	// 		),
+	// 		"normalMap-repeat": [40, 40],
+	// 		normalScale: [0.05, 0.05],
+	// 	})
+	// })
+	// useFrame((state) => {
+  //   const t = state.clock.getElapsedTime()
+  //   ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8
+  //   ref.current.rotation.y = Math.sin(t / 4) / 8
+  //   ref.current.rotation.z = (1 + Math.sin(t / 1.5)) / 20
+  //   ref.current.position.y = (1 + Math.sin(t / 1.5)) / 10
+  // })
 	return <primitive object={scene} {...nextProps} />
+}
+
+function FbxModel(props) {
+	const { url, ...nextProps } = props
+	const fbx = useFBX(url)
+	return <primitive object={fbx} {...nextProps} />
+}
+
+function ObjModel(props) {
+	const { url, ...nextProps } = props
+	const obj = useLoader(OBJLoader, url)
+	return <primitive object={obj} {...nextProps} />
 }
 
 export default Loader
