@@ -1,12 +1,12 @@
 import { useRef, useLayoutEffect, Suspense, useMemo, useCallback } from "react"
-import { Canvas, applyProps, useLoader, useFrame } from "@react-three/fiber"
+import { Canvas, applyProps, useFrame } from "@react-three/fiber"
 import {
 	OrbitControls,
 	Environment,
 	useGLTF,
-	useFBX
+	// useFBX
 } from "@react-three/drei"
-import { OBJLoader } from "three-stdlib"
+// import { OBJLoader } from "three-stdlib"
 import './index.css'
 
 const Loader = (props) => {
@@ -136,22 +136,22 @@ function GltfModel(props) {
 	return <primitive ref={ref} object={scene} {...nextProps} />
 }
 
-function FbxModel(props) {
-	const { url, objectType, ...nextProps } = props
-	const fbx = useFBX(url)
+// function FbxModel(props) {
+// 	const { url, objectType, ...nextProps } = props
+// 	const fbx = useFBX(url)
 
-	useLayoutEffect(() => {
-		fbx.traverse(
-			(obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true)
-		)
-	})
-	return <primitive object={fbx} {...nextProps} />
-}
+// 	useLayoutEffect(() => {
+// 		fbx.traverse(
+// 			(obj) => obj.isMesh && (obj.receiveShadow = obj.castShadow = true)
+// 		)
+// 	})
+// 	return <primitive object={fbx} {...nextProps} />
+// }
 
-function ObjModel(props) {
-	const { url, objectType, ...nextProps } = props
-	const obj = useLoader(OBJLoader, url)
-	return <primitive object={obj} {...nextProps} />
-}
+// function ObjModel(props) {
+// 	const { url, objectType, ...nextProps } = props
+// 	const obj = useLoader(OBJLoader, url)
+// 	return <primitive object={obj} {...nextProps} />
+// }
 
 export default Loader
