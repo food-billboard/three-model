@@ -6,9 +6,23 @@ import './index.css'
 const Home = () => {
 
   const [ parentData, setParentData ] = useState({
+    scale: 0.01,
+    position: {
+      x: 0,
+      y: 0,
+      z: 0
+    },
+    rotate: {
+      show: true,
+      speed: 50000
+    },
+    color: '#4ea397',
     // value: 'https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/suzanne-high-poly/model.gltf'
     value: '/lambo.glb'
     // value: '/model.gltf'
+    // value: 'watch.glb',
+    // value: '/model.fbx'
+    // value: '/older.fbx'
   })
 
   const parentIdRef = useRef()
@@ -19,7 +33,9 @@ const Home = () => {
       const parseData = JSON.parse(data)
       if(!parseData.id) return 
       parentIdRef.current = parseData.id 
-      setParentData(parseData)
+      setParentData(prev => {
+        return Object.assign({}, prev, parseData)
+      })
     }catch(err) {
 
     }
@@ -38,7 +54,7 @@ const Home = () => {
     > 
       {
         !parentData.value && (
-          <GridLoader className='three-model-home-loading' color={parentData.color || '#4ea397'} />
+          <GridLoader className='three-model-home-loading' color={parentData.color} />
         )
       }
       {
