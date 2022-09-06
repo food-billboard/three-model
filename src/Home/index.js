@@ -17,8 +17,8 @@ const Home = () => {
       speed: 50000
     },
     color: '#4ea397',
-    // value: 'https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/suzanne-high-poly/model.gltf'
-    value: '/lambo.glb'
+    value: 'https://market-assets.fra1.cdn.digitaloceanspaces.com/market-assets/models/suzanne-high-poly/model.gltf'
+    // value: '/lambo.glb'
     // value: '/model.gltf'
     // value: 'watch.glb',
     // value: '/model.fbx'
@@ -34,7 +34,10 @@ const Home = () => {
       if(!parseData.id) return 
       parentIdRef.current = parseData.id 
       setParentData(prev => {
-        return Object.assign({}, prev, parseData)
+        return {
+          ...prev,
+          ...parseData.value 
+        }
       })
     }catch(err) {
 

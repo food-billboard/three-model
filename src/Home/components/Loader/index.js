@@ -48,18 +48,18 @@ function InternalLoader(props) {
 			position: [position.x, position.y, position.z],
 		}
 		switch(objectType) {
-			case 'fbx':
-				return (
-					<FbxModel
-						{...commonProps}
-					/>
-				)
-			case 'obj':
-				return (
-					<ObjModel
-						{...commonProps}
-					/>
-				)
+			// case 'fbx':
+			// 	return (
+			// 		<FbxModel
+			// 			{...commonProps}
+			// 		/>
+			// 	)
+			// case 'obj':
+			// 	return (
+			// 		<ObjModel
+			// 			{...commonProps}
+			// 		/>
+			// 	)
 			case 'glb':
 			case 'gltf':
 				return (
@@ -125,7 +125,7 @@ function GltfModel(props) {
 
 	useFrame((state) => {
     const time = state.clock.getElapsedTime()
-		if(!!~prevTimeRef.current) {
+		if(!!~prevTimeRef.current && !!~speed) {
 			const cal = time * 1000 - prevTimeRef.current * 1000 
 			const newRotate = ref.current.rotation.y + speed * cal
 			ref.current.rotation.y = newRotate % (Math.PI * 2) 
